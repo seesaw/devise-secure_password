@@ -108,15 +108,21 @@ Devise.setup do |config|
   #     Module: password_has_required_content
   #
   # Configure password content requirements including the number of uppercase,
-  # lowercase, number, and special characters that are required. To configure the
+  # lowercase, anycase, number, and special characters that are required. To configure the
   # minimum and maximum length refer to the Devise config.password_length
   # standard configuration parameter.
 
-  # The number of uppercase letters (latin A-Z) required in a password:
+  # The number of uppercase letters required in a password:
   # config.password_required_uppercase_count = 1
 
-  # The number of lowercase letters (latin A-Z) required in a password:
+  # The number of lowercase letters required in a password:
   # config.password_required_lowercase_count = 1
+  
+  # The number of anycase letters required in a password (default its lower case plus uppercase count):
+  # config.password_required_anycase_count = 2
+
+  # The class used to analyze and count the chars types in the password
+  # password.password_character_counter_class = Support::String::CharacterCounter
 
   # The number of numbers (0-9) required in a password:
   # config.password_required_number_count = 1

@@ -1,8 +1,9 @@
 require 'support/string/character_counter'
 
 RSpec.describe Support::String::CharacterCounter do
-  let(:bad_string) { nil }
-  let(:good_string) { 'ABBabb12!#' }
+  let(:input_string) { '' }
+
+  subject { described_class.new(input_string) }
 
   let(:uppercase_chars) { ('A'..'Z').to_a }
   let(:lowercase_chars) { ('a'..'z').to_a }
@@ -12,20 +13,23 @@ RSpec.describe Support::String::CharacterCounter do
 
   describe 'attributes' do
     it { is_expected.to respond_to(:count_hash) }
-    it { is_expected.to respond_to(:count) }
+    it { is_expected.to respond_to(:analyze) }
   end
 
-  describe '#count' do
+  describe '#analyze' do
     context 'when input string is invalid' do
+      let(:input_string) { nil }
+
       it 'raises an ArgumentError' do
-        expect { subject.count(bad_string) }.to raise_error(ArgumentError)
+        expect { subject.analyze }.to raise_error(ArgumentError)
       end
     end
 
     context 'when input string is valid' do
-      it 'tallies the correct chracter counts' do
-        subject.count(good_string)
+      let(:input_string) { 'ABBabb12!#' }
 
+      it 'tallies the correct chracter counts' do
+        subject.analyze
         expect(subject.count_hash[:uppercase]['A']).to eq(1)
         expect(subject.count_hash[:uppercase]['B']).to eq(2)
         expect(subject.count_hash[:lowercase]['a']).to eq(1)
@@ -36,7 +40,7 @@ RSpec.describe Support::String::CharacterCounter do
       end
 
       it 'correctly categorizes uppercase characters' do
-        subject.count(uppercase_chars.join)
+        subject.analyze(uppercase_chars.join)
 
         uppercase_chars.each do |c|
           expect(subject.count_hash[:uppercase][c]).to eq(1)
@@ -44,7 +48,7 @@ RSpec.describe Support::String::CharacterCounter do
       end
 
       it 'correctly categorizes lowercase characters' do
-        subject.count(lowercase_chars.join)
+        subject.analyze(lowercase_chars.join)
 
         lowercase_chars.each do |c|
           expect(subject.count_hash[:lowercase][c]).to eq(1)
@@ -52,7 +56,7 @@ RSpec.describe Support::String::CharacterCounter do
       end
 
       it 'correctly categorizes number characters' do
-        subject.count(number_chars.join)
+        subject.analyze(number_chars.join)
 
         number_chars.each do |c|
           expect(subject.count_hash[:number][c]).to eq(1)
@@ -60,7 +64,7 @@ RSpec.describe Support::String::CharacterCounter do
       end
 
       it 'correctly categorizes special characters' do
-        subject.count(special_chars.join)
+        subject.analyze(special_chars.join)
 
         special_chars.each do |c|
           expect(subject.count_hash[:special][c]).to eq(1)
@@ -68,7 +72,7 @@ RSpec.describe Support::String::CharacterCounter do
       end
 
       it 'correctly categorizes unknown characters' do
-        subject.count(unknown_chars.join)
+        subject.analyze(unknown_chars.join)
 
         unknown_chars.each do |c|
           expect(subject.count_hash[:unknown][c]).to eq(1)

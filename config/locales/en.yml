@@ -8,6 +8,7 @@ en:
       uppercase: "uppercase"
       downcase: "downcase"
       lowercase: "lowercase"
+      anycase: "anycase"
       number: "number"
       special: "special"
 

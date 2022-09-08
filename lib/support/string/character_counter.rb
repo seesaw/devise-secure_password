@@ -1,50 +1,55 @@
+require_relative 'latin_dictionary'
+require_relative 'count_result'
+
 # lib/support/character_counter.rb
 #
 module Support
   module String
     class CharacterCounter
-      attr_reader :count_hash
+      extend LatinDictionary
 
-      def initialize
-        @count_hash = {
-          length: { count: 0 },
-          uppercase: characters_to_dictionary(('A'..'Z').to_a),
-          lowercase: characters_to_dictionary(('a'..'z').to_a),
-          number: characters_to_dictionary(('0'..'9').to_a),
-          special: characters_to_dictionary([' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '-', '=', '[', ']', '{', '}', '|', '"', '/', '\\', '.', ',', '`', '<', '>', ':', ';', '?', '~', "'"]),
-          unknown: {}
-        }
+      def self.analyze(string)
+        new(string).analyze
       end
 
-      def count(string)
+      attr_reader :count_hash, :string
+
+      def initialize(string)
         raise ArgumentError, "Invalid value for string: #{string}" if string.nil?
 
-        string.chars.each { |c| tally_character(c) }
-        @count_hash[:length][:count] = string.length
+        @string = string
+        reset_count_hash!
+      end
 
-        @count_hash
+      def analyze(new_string = nil)
+        @string = new_string if new_string.present?
+
+        reset_count_hash!
+        string.chars.each { |c| tally_character(c) }
+        count_hash[:length][:count] = string.length
+
+        count_hash
       end
 
       private
 
-      def characters_to_dictionary(array)
-        dictionary = {}
-        array.each { |c| dictionary.store(c, 0) }
+      attr_writer :count_hash
 
-        dictionary
+      def reset_count_hash!
+        @count_hash = CountResult[self.class.dictionary]
       end
 
       def tally_character(character)
         %i(uppercase lowercase number special unknown).each do |type|
-          if @count_hash[type].key?(character)
-            @count_hash[type][character] += 1
-            return @count_hash[type][character]
+          if count_hash[type].key?(character)
+            count_hash[type][character] += 1
+            return count_hash[type][character]
           end
         end
 
         # must be new unknown char
-        @count_hash[:unknown][character] = 1
-        @count_hash[:unknown][character]
+        count_hash[:unknown][character] = 1
+        count_hash[:unknown][character]
       end
 
       def character_in_dictionary?(character, dictionary)
