@@ -1,0 +1,66 @@
+require 'support/string/multi_lang_character_counter'
+
+RSpec.describe Support::String::MultiLangCharacterCounter do
+  let(:input_string) { '' }
+
+  subject { described_class.new(input_string) }
+
+  describe 'attributes' do
+    it { is_expected.to respond_to(:analyze) }
+    it { is_expected.to respond_to(:count_hash) }
+  end
+
+  describe '#count' do
+    context 'when input string is invalid' do
+      let(:input_string) { nil }
+
+      it 'raises an ArgumentError' do
+        expect { subject.analyze }.to raise_error(ArgumentError)
+      end
+    end
+
+    context 'when input string is a non latin lang' do
+      let(:input_string) do
+        [
+          'خزانة ؛12', # 'guardaroba .12'
+        ].sample
+      end
+
+      it 'tallies the correct chracter counts' do
+        count_hash = subject.analyze
+        
+        total_anycase = subject.count_hash[:anycase].values.sum
+        total_number = subject.count_hash[:number].values.sum
+        total_special = subject.count_hash[:special].values.sum
+        total_unknown = subject.count_hash[:unknown].values.sum
+
+        expect(total_anycase).to eq(5)
+        expect(total_number).to eq(2)
+        expect(total_special).to eq(2)
+        expect(total_unknown).to eq(0)
+      end
+    end
+
+    context 'when input string is a latin lang' do
+      let(:input_string) do
+        ['GUardaroba.12 '].sample
+      end
+
+      it 'tallies the correct chracter counts' do
+        count_hash = subject.analyze
+        
+        total_uppercase = count_hash[:uppercase].values.sum
+        total_lowercase = count_hash[:lowercase].values.sum
+        total_number = count_hash[:number].values.sum
+        total_special = count_hash[:special].values.sum
+        total_unknown = count_hash[:unknown].values.sum
+
+        expect(total_uppercase).to eq(2)
+        expect(total_lowercase).to eq(8)
+        expect(total_number).to eq(2)
+        expect(total_special).to eq(2)
+        expect(total_unknown).to eq(0)
+      end
+    end
+  end
+end

@@ -11,6 +11,7 @@ require 'devise/secure_password/models/password_disallows_frequent_changes'
 require 'devise/secure_password/models/password_requires_regular_updates'
 require 'devise/secure_password/grammar'
 require 'support/string/character_counter'
+require 'support/string/multi_lang_character_counter'
 
 module Devise
   # password_content_enforcement configuration parameters
