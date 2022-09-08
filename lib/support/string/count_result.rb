@@ -1,26 +1,24 @@
 module Support
   module String
-    class CountResult < Hash 
+    class CountResult < Hash
       def string_length
         self[:length][:count]
       end
 
-      def string_length_present?
-        string_length.present?
-      end
+      delegate :present?, to: :string_length, prefix: true
 
       def unknown_chars
         self[:unknown]
       end
 
       def unknown_chars_present?
-        return false unless unknown_chars.present?
+        return false if unknown_chars.blank?
 
-        unknown_chars.values.sum > 0
+        unknown_chars.values.sum.positive?
       end
 
       def known_chars
-        self.slice(:uppercase, :lowercase, :anycase, :number, :special)
+        slice(:uppercase, :lowercase, :anycase, :number, :special)
       end
     end
   end

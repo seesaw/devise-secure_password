@@ -22,22 +22,20 @@ RSpec.describe Support::String::MultiLangCharacterCounter do
     context 'when input string is a non latin lang' do
       let(:input_string) do
         [
-          'خزانة ؛12', # 'guardaroba .12'
+          'خزانة ؛12' # 'guardaroba .12'
         ].sample
       end
 
+      before { subject.analyze }
+
       it 'tallies the correct chracter counts' do
-        count_hash = subject.analyze
-        
         total_anycase = subject.count_hash[:anycase].values.sum
         total_number = subject.count_hash[:number].values.sum
         total_special = subject.count_hash[:special].values.sum
-        total_unknown = subject.count_hash[:unknown].values.sum
 
         expect(total_anycase).to eq(5)
         expect(total_number).to eq(2)
         expect(total_special).to eq(2)
-        expect(total_unknown).to eq(0)
       end
     end
 
@@ -46,20 +44,18 @@ RSpec.describe Support::String::MultiLangCharacterCounter do
         ['GUardaroba.12 '].sample
       end
 
+      before { subject.analyze }
+
       it 'tallies the correct chracter counts' do
-        count_hash = subject.analyze
-        
-        total_uppercase = count_hash[:uppercase].values.sum
-        total_lowercase = count_hash[:lowercase].values.sum
-        total_number = count_hash[:number].values.sum
-        total_special = count_hash[:special].values.sum
-        total_unknown = count_hash[:unknown].values.sum
+        total_uppercase = subject.count_hash[:uppercase].values.sum
+        total_lowercase = subject.count_hash[:lowercase].values.sum
+        total_number = subject.count_hash[:number].values.sum
+        total_special = subject.count_hash[:special].values.sum
 
         expect(total_uppercase).to eq(2)
         expect(total_lowercase).to eq(8)
         expect(total_number).to eq(2)
         expect(total_special).to eq(2)
-        expect(total_unknown).to eq(0)
       end
     end
   end

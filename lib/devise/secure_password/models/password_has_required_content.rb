@@ -1,5 +1,6 @@
 module Devise
   module Models
+    # rubocop:disable Metrics/ModuleLength
     module PasswordHasRequiredContent
       extend ActiveSupport::Concern
 
@@ -78,11 +79,11 @@ module Devise
       end
 
       def validate_length(dict, attr)
-        error_string =  if dict < Devise.password_length.min
-                          error_string_for_length(:min)
-                        elsif dict > Devise.password_length.max
-                          error_string_for_length(:max)
-                        end
+        error_string = if dict < Devise.password_length.min
+                         error_string_for_length(:min)
+                       elsif dict > Devise.password_length.max
+                         error_string_for_length(:max)
+                       end
         add_error_with_string(error_string, attr)
       end
 
@@ -116,7 +117,7 @@ module Devise
           'secure_password.password_has_required_content.errors.messages.unknown_characters',
           count: count,
           subject: I18n.t('secure_password.character', count: count)
-        ) + " (#{ dict.keys.join(', ') })"
+        ) + " (#{dict.keys.join(', ')})"
       end
 
       def required_char_counts_for_type(type)
@@ -175,6 +176,7 @@ module Devise
         end
         # rubocop:enable Metrics/MethodLength
       end
+      # rubocop:enable Metrics/ModuleLength
     end
   end
 end
