@@ -28,10 +28,7 @@ module Support
       private
 
       def characters_to_dictionary(array)
-        dictionary = {}
-        array.each { |c| dictionary.store(c, 0) }
-
-        dictionary
+        array.index_with { |_i| 0 }
       end
     end
   end

@@ -39,6 +39,20 @@ RSpec.describe Support::String::MultiLangCharacterCounter do
       end
     end
 
+    context 'when input string is a non latin lang with display width greater than 1' do
+      let(:input_string) do
+        ['他の'].sample
+      end
+
+      before { subject.analyze }
+
+      it 'tallies the correct chracter counts' do
+        total_anycase = subject.count_hash[:anycase].values.sum
+
+        expect(total_anycase).to eq(4)
+      end
+    end
+
     context 'when input string is a latin lang' do
       let(:input_string) do
         ['GUardaroba.12 '].sample

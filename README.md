@@ -133,8 +133,8 @@ Devise.setup do |config|
   # The number of lowercase letters required in a password:
   # config.password_required_lowercase_count = 1
   
-  # The number of anycase letters required in a password (default its lower case plus uppercase count):
-  # config.password_required_anycase_count = 2
+  # The number of anycase letters required in a password (i.e default is nil):
+  # config.password_required_anycase_count = nil
 
   # The class used to analyze and count the chars types in the password
   # password.password_character_counter_class = Support::String::CharacterCounter

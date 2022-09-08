@@ -65,7 +65,7 @@ module Devise
       def validate_known_chars_map(known_chars, attr)
         known_chars.each do |known_chars_type, chars_map|
           error_string = validate_known_chars_type(known_chars_type, chars_map)
-          errors.add(attr, error_string) if error_string.present?
+          add_error_with_string(error_string, attr)
         end
       end
 
