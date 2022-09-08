@@ -2,10 +2,8 @@ module Support
   module String
     class CountResult < Hash
       def string_length
-        self[:length][:count]
+        self[:length][:count] || 0
       end
-
-      delegate :present?, to: :string_length, prefix: true
 
       def unknown_chars
         self[:unknown]

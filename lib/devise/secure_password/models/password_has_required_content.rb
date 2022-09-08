@@ -43,7 +43,7 @@ module Devise
         return unless respond_to?(attr) && !(password_obj = send(attr)).nil?
 
         result = character_counter_class.analyze(password_obj)
-        validate_length(result.string_length, attr) if result.string_length_present?
+        validate_length(result.string_length, attr)
         validate_unknown_chars(result.unknown_chars, attr) if result.unknown_chars_present?
         validate_known_chars_map(result.known_chars, attr)
       end

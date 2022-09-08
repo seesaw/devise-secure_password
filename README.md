@@ -26,6 +26,21 @@ The __Devise Secure Password Extension__ is composed of the following modules:
 - __password_requires_regular_updates__: require that a user change their password following a time duration
   (configurable)
 
+### Language compatibilty
+
+By default the library check the string with a latin character counter so it will fails with a non latin string. To support also non-latin languages (like Cyrillic, Asian, Arabic, etc..) you have to configure the `password_character_counter_class` devise config.
+The available counter class are:
+- `Support::String::CharacterCounter` -> default, only latin chars
+- `Support::String::MultiLangCharacterCounter` -> every language type (Cyrillic, Asian, Arabic, etc..), **requires** at runtime the gem `unicode_utils` please install it
+
+If you want, you can provide your custom character counter class, it should respond to `analyze` class method and return an result instance that responds to these methods:
+```ruby
+result.string_length # 12
+result.unknown_chars # { 'a': 2 }
+result.unknown_chars_present? # true/false
+result.known_chars # { uppercase: { 'A': 1 }, lowercase: {}, anycase: {} }
+```
+
 ## Compatibility
 
 The goal of this project is to provide compatibility for officially supported stable releases of [Ruby](https://www.ruby-lang.org/en/downloads/)
