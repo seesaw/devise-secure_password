@@ -29,7 +29,7 @@ module Support
       private
 
       def with_total_length_and_default(categorized)
-        total_length = categorized.values.map(&:values).flatten.sum
+        total_length = categorized.empty? ? 0 : categorized.values.map(&:values).flatten.sum
         { length: { count: total_length }, number: {}, special: {} }.merge(categorized)
       end
 
@@ -38,6 +38,7 @@ module Support
           width_count = UnicodeUtils.char_display_width(char) * count
           categorize_char(char, width_count)
         end.reduce(:deep_merge)
+        categorized ||= {}
         with_total_length_and_default(categorized)
       end
 

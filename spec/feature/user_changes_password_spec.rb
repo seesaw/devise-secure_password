@@ -56,21 +56,28 @@ RSpec.describe 'User changes password', type: :feature do
   end
 
   context 'with an invalid new password' do
-    let(:uppercase_range) { Regexp.escape('(A..Z)') }
-    let(:lowercase_range) { Regexp.escape('(a..z)') }
-    let(:numeric_range) { Regexp.escape('(0..9)') }
-    let(:special_range) { Regexp.escape("( !@\#$%^&*()_+-=[]{}|\"/\\.,`<>:;?~')") }
+    uppercase_range = Regexp.escape('(A..Z)')
+    numeric_range = Regexp.escape('(0..9)')
+    special_range = Regexp.escape("( !@\#$%^&*()_+-=[]{}|\"/\\.,`<>:;?~')")
+    error_messages = [
+      /Password must contain at least 1 uppercase character #{uppercase_range}/,
+      /Password must contain at least 1 number character #{numeric_range}/,
+      /Password must contain at least 1 special character #{special_range}/,
+      /Password confirmation must contain at least 1 uppercase character #{uppercase_range}/,
+      /Password confirmation must contain at least 1 number character #{numeric_range}/,
+      /Password confirmation must contain at least 1 special character #{special_range}/
+    ]
 
     context 'when new password is invalid' do
       let(:bad_password) { 'a' * 12 }
 
-      it_behaves_like 'a submission with multiple new password errors'
+      it_behaves_like 'a submission with multiple new password errors', error_messages
     end
 
     context 'when new password is blank' do
       let(:bad_password) { '' }
 
-      it_behaves_like 'a submission with multiple new password errors'
+      it_behaves_like 'a submission with multiple new password errors', error_messages
     end
   end
 
@@ -92,7 +99,27 @@ RSpec.describe 'User changes password', type: :feature do
     context 'when new password is invalid' do
       let(:bad_password) { 'خزا' }
 
-      it_behaves_like 'a submission with multiple new non-latin password errors', 4
+      it_behaves_like 'a submission with multiple new password errors', [
+        /Password must contain at least 4 anycase characters/,
+        /Password must contain at least 1 number character/,
+        /Password must contain at least 1 special character/,
+        /Password confirmation must contain at least 4 anycase characters/,
+        /Password confirmation must contain at least 1 number character/,
+        /Password confirmation must contain at least 1 special character/
+      ]
+    end
+
+    context 'when new password is blank' do
+      let(:bad_password) { '' }
+
+      it_behaves_like 'a submission with multiple new password errors', [
+        /Password must contain at least 6 characters/,
+        /Password must contain at least 1 number character/,
+        /Password must contain at least 1 special character/,
+        /Password confirmation must contain at least 6 characters/,
+        /Password confirmation must contain at least 1 number character/,
+        /Password confirmation must contain at least 1 special character/
+      ]
     end
   end
 
