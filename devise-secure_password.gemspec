@@ -30,11 +30,11 @@ Gem::Specification.new do |spec|
   }
 
   spec.executables   = spec.files.grep(%r{^bin/}).map { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'devise', '>= 4.0.0', '< 5.0.0'
   spec.add_runtime_dependency 'railties', '>= 5.0.0', '< 8.0.0'
+  spec.add_runtime_dependency 'unicode_utils'
 
   spec.add_development_dependency 'bundler',                 '>= 2.2.14'
   spec.add_development_dependency 'capybara',                '>= 3.35.3'

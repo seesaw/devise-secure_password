@@ -13,74 +13,6 @@ RSpec.describe 'User changes password', type: :feature do
     )
   end
 
-  shared_examples_for 'a submission with a bad password' do |error_regex|
-    before do
-      user.save
-      login_as(user, scope: :user)
-      visit '/users/change_password/edit'
-    end
-
-    it 'remains on page and displays error messages', js: true do
-      expect(page).to have_content(/Change your password/i)
-      fill_in 'user_current_password', with: current_password
-      fill_in 'user_password', with: new_password
-      fill_in 'user_password_confirmation', with: new_password_confirmation
-      find(:xpath, ".//input[@type='submit' and @name='commit']").click
-
-      expect(page).to have_content(/Change your password/i)
-      within '#error_explanation' do
-        expect(page).to have_content(error_regex)
-      end
-    end
-  end
-
-  shared_examples_for 'a submission with a bad password confirmation' do |error_regex|
-    before do
-      user.save
-      login_as(user, scope: :user)
-      visit '/users/change_password/edit'
-    end
-
-    it 'remains on page and displays error messages', js: true do
-      expect(page).to have_content(/Change your password/i)
-      fill_in 'user_current_password', with: current_password
-      fill_in 'user_password', with: new_password
-      fill_in 'user_password_confirmation', with: new_password_confirmation
-      find(:xpath, ".//input[@type='submit' and @name='commit']").click
-
-      expect(page).to have_content(/Change your password/i)
-      within '#error_explanation' do
-        expect(page).to have_content(error_regex)
-      end
-    end
-  end
-
-  shared_examples_for 'a submission with multiple new password errors' do
-    before do
-      user.save
-      login_as(user, scope: :user)
-      visit '/users/change_password/edit'
-    end
-
-    it 'remains on page and displays error messages', js: true do
-      expect(page).to have_content(/Change your password/i)
-      fill_in 'user_current_password', with: password
-      fill_in 'user_password', with: bad_password
-      fill_in 'user_password_confirmation', with: bad_password
-      find(:xpath, ".//input[@type='submit' and @name='commit']").click
-
-      expect(page).to have_content(/Change your password/i)
-      within '#error_explanation' do
-        expect(page).to have_content(/Password must contain at least 1 uppercase character #{uppercase_range}/)
-        expect(page).to have_content(/Password must contain at least 1 number character #{numeric_range}/)
-        expect(page).to have_content(/Password must contain at least 1 special character #{special_range}/)
-        expect(page).to have_content(/Password confirmation must contain at least 1 uppercase character #{uppercase_range}/)
-        expect(page).to have_content(/Password confirmation must contain at least 1 number character #{numeric_range}/)
-        expect(page).to have_content(/Password confirmation must contain at least 1 special character #{special_range}/)
-      end
-    end
-  end
-
   before do
     Devise.setup { |config| config.password_minimum_age = 0.days }
   end
@@ -124,21 +56,70 @@ RSpec.describe 'User changes password', type: :feature do
   end
 
   context 'with an invalid new password' do
-    let(:uppercase_range) { Regexp.escape('(A..Z)') }
-    let(:lowercase_range) { Regexp.escape('(a..z)') }
-    let(:numeric_range) { Regexp.escape('(0..9)') }
-    let(:special_range) { Regexp.escape("( !@\#$%^&*()_+-=[]{}|\"/\\.,`<>:;?~')") }
+    uppercase_range = Regexp.escape('(A..Z)')
+    numeric_range = Regexp.escape('(0..9)')
+    special_range = Regexp.escape("( !@\#$%^&*()_+-=[]{}|\"/\\.,`<>:;?~')")
+    error_messages = [
+      /Password must contain at least 1 uppercase character #{uppercase_range}/,
+      /Password must contain at least 1 number character #{numeric_range}/,
+      /Password must contain at least 1 special character #{special_range}/,
+      /Password confirmation must contain at least 1 uppercase character #{uppercase_range}/,
+      /Password confirmation must contain at least 1 number character #{numeric_range}/,
+      /Password confirmation must contain at least 1 special character #{special_range}/
+    ]
 
     context 'when new password is invalid' do
       let(:bad_password) { 'a' * 12 }
 
-      it_behaves_like 'a submission with multiple new password errors'
+      it_behaves_like 'a submission with multiple new password errors', error_messages
     end
 
     context 'when new password is blank' do
       let(:bad_password) { '' }
 
-      it_behaves_like 'a submission with multiple new password errors'
+      it_behaves_like 'a submission with multiple new password errors', error_messages
+    end
+  end
+
+  context 'with an invalid new non-latin password' do
+    before do
+      Devise.setup do |config|
+        config.password_required_anycase_count = 4
+        config.password_character_counter_class = Support::String::MultiLangCharacterCounter
+      end
+    end
+
+    after do
+      Devise.setup do |config|
+        config.password_required_anycase_count = nil
+        config.password_character_counter_class = Support::String::CharacterCounter
+      end
+    end
+
+    context 'when new password is invalid' do
+      let(:bad_password) { 'خزا' }
+
+      it_behaves_like 'a submission with multiple new password errors', [
+        /Password must contain at least 4 anycase characters/,
+        /Password must contain at least 1 number character/,
+        /Password must contain at least 1 special character/,
+        /Password confirmation must contain at least 4 anycase characters/,
+        /Password confirmation must contain at least 1 number character/,
+        /Password confirmation must contain at least 1 special character/
+      ]
+    end
+
+    context 'when new password is blank' do
+      let(:bad_password) { '' }
+
+      it_behaves_like 'a submission with multiple new password errors', [
+        /Password must contain at least 6 characters/,
+        /Password must contain at least 1 number character/,
+        /Password must contain at least 1 special character/,
+        /Password confirmation must contain at least 6 characters/,
+        /Password confirmation must contain at least 1 number character/,
+        /Password confirmation must contain at least 1 special character/
+      ]
     end
   end
 
@@ -160,7 +141,7 @@ RSpec.describe 'User changes password', type: :feature do
     before do
       user.save
       last_password = user.previous_passwords.first
-      last_password.created_at = Time.zone.now - 2.days
+      last_password.created_at = 2.days.ago
       last_password.save
       login_as(user, scope: :user)
       visit '/users/change_password/edit'

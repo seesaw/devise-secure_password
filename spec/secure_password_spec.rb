@@ -6,11 +6,13 @@ RSpec.describe Devise::SecurePassword do
   context 'configuration parameters' do
     %w(password_required_uppercase_count
        password_required_lowercase_count
+       password_required_anycase_count
        password_required_number_count
        password_required_special_character_count
        password_previously_used_count
        password_minimum_age
-       password_maximum_age).each do |attr|
+       password_maximum_age
+       password_character_counter_class).each do |attr|
       it "#{attr} should be a Devise configuration variable" do
         expect(Devise).to respond_to(attr)
         expect(Devise).to respond_to("#{attr}=")
