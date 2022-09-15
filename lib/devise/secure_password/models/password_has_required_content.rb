@@ -42,7 +42,7 @@ module Devise
       def validate_password_content_for(attr)
         return unless respond_to?(attr) && !(password_obj = send(attr)).nil?
 
-        result = character_counter_class.analyze(password_obj)
+        result = character_counter_class.analyze(password_obj, password_locale: user_password_locale)
         validate_length(result.string_length, attr)
         validate_unknown_chars(result.unknown_chars, attr) if result.unknown_chars_present?
         validate_known_chars_map(result.known_chars, attr)
@@ -128,6 +128,13 @@ module Devise
         self.class.password_character_counter_class
       end
 
+      def user_password_locale
+        config_password_locale = self.class.password_locale
+        return if config_password_locale.nil?
+
+        config_password_locale.is_a?(Proc) ? config_password_locale.call(self) : config_password_locale
+      end
+
       module ClassMethods
         config_params = %i(
           password_required_uppercase_count
@@ -136,6 +143,7 @@ module Devise
           password_required_number_count
           password_required_special_character_count
           password_character_counter_class
+          password_locale
         )
         ::Devise::Models.config(self, *config_params)
 

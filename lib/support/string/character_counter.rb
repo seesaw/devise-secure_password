@@ -8,7 +8,7 @@ module Support
     class CharacterCounter
       extend LatinDictionary
 
-      def self.analyze(string)
+      def self.analyze(string, _args = {})
         new(string).analyze
       end
 

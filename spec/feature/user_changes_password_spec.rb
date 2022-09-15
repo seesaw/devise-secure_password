@@ -82,17 +82,13 @@ RSpec.describe 'User changes password', type: :feature do
   end
 
   context 'with an invalid new non-latin password' do
+    let(:password) { '.أهلا1وسهلا' }
+
     before do
       Devise.setup do |config|
         config.password_required_anycase_count = 4
         config.password_character_counter_class = Support::String::MultiLangCharacterCounter
-      end
-    end
-
-    after do
-      Devise.setup do |config|
-        config.password_required_anycase_count = nil
-        config.password_character_counter_class = Support::String::CharacterCounter
+        config.password_locale = :ar
       end
     end
 
@@ -120,6 +116,14 @@ RSpec.describe 'User changes password', type: :feature do
         /Password confirmation must contain at least 1 number character/,
         /Password confirmation must contain at least 1 special character/
       ]
+    end
+
+    after do
+      Devise.setup do |config|
+        config.password_required_anycase_count = nil
+        config.password_character_counter_class = Support::String::CharacterCounter
+        config.password_locale = nil
+      end
     end
   end
 
