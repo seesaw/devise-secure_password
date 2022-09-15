@@ -139,6 +139,10 @@ Devise.setup do |config|
   # The class used to analyze and count the chars types in the password
   # password.password_character_counter_class = Support::String::CharacterCounter
 
+  # The password locale used to validate it when specified MultiLangCharacterCounter counter class
+  # it could be a string or a proc (with user as parameter)
+  # password.password_locale = nil
+
   # The number of numbers (0-9) required in a password:
   # config.password_required_number_count = 1
 

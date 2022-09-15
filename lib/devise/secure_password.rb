@@ -33,11 +33,14 @@ module Devise
   # password character counter class used
   @password_character_counter_class = Support::String::CharacterCounter
 
+  # password locale when used multi language character counter, could be a symbol or a proc (giving user)
+  @password_locale = nil
+
   class << self
     attr_accessor :password_required_uppercase_count, :password_required_lowercase_count,
                   :password_required_number_count, :password_required_special_character_count,
                   :password_previously_used_count, :password_minimum_age, :password_maximum_age,
-                  :password_required_anycase_count, :password_character_counter_class
+                  :password_required_anycase_count, :password_character_counter_class, :password_locale
   end
 
   module SecurePassword
